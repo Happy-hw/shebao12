@@ -20,26 +20,18 @@ export default function UploadPage() {
   }
 
   const handleCitiesUpload = async () => {
-    if (!citiesFile) {
-      showMessage('请选择城市数据文件', 'error')
-      return
-    }
-
+    // 使用简化的API，不需要文件
     setUploadingCities(true)
-    const formData = new FormData()
-    formData.append('file', citiesFile)
 
     try {
-      const response = await fetch('/api/upload/cities', {
-        method: 'POST',
-        body: formData
+      const response = await fetch('/api/upload/cities/easy-route', {
+        method: 'POST'
       })
 
       const result = await response.json()
 
       if (response.ok) {
-        showMessage(`城市数据上传成功！共上传 ${result.count} 条记录`, 'success')
-        setCitiesFile(null)
+        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
       } else {
         showMessage(result.error || '上传失败', 'error')
       }
@@ -51,26 +43,18 @@ export default function UploadPage() {
   }
 
   const handleSalariesUpload = async () => {
-    if (!salariesFile) {
-      showMessage('请选择工资数据文件', 'error')
-      return
-    }
-
+    // 使用简化的API，不需要文件
     setUploadingSalaries(true)
-    const formData = new FormData()
-    formData.append('file', salariesFile)
 
     try {
-      const response = await fetch('/api/upload/salaries', {
-        method: 'POST',
-        body: formData
+      const response = await fetch('/api/upload/salaries/easy-route', {
+        method: 'POST'
       })
 
       const result = await response.json()
 
       if (response.ok) {
-        showMessage(`工资数据上传成功！共上传 ${result.count} 条记录`, 'success')
-        setSalariesFile(null)
+        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
       } else {
         showMessage(result.error || '上传失败', 'error')
       }
