@@ -144,6 +144,16 @@ export default function UploadPage() {
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 上传各城市的社保基数标准（Excel格式）
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                需要包含列：city_name, year, base_min, base_max, rate
+              </p>
+              <a
+                href="/api/templates/cities"
+                download="cities_template.xlsx"
+                className="inline-block mt-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              >
+                下载模板文件 →
+              </a>
             </div>
 
             <div className="space-y-4">
@@ -179,6 +189,16 @@ export default function UploadPage() {
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 上传员工月度工资数据（Excel格式）
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                需要包含列：employee_id, employee_name, city_name, month, salary_amount
+              </p>
+              <a
+                href="/api/templates/salaries"
+                download="salaries_template.xlsx"
+                className="inline-block mt-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              >
+                下载模板文件 →
+              </a>
             </div>
 
             <div className="space-y-4">
