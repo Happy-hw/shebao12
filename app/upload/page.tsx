@@ -68,7 +68,7 @@ export default function UploadPage() {
   const handleCalculate = async () => {
     setCalculating(true)
     try {
-      const response = await fetch('/api/calculate', {
+      const response = await fetch('/api/calculate/simple-route', {
         method: 'POST'
       })
 
