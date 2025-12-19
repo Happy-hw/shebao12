@@ -24,7 +24,7 @@ export default function UploadPage() {
     setUploadingCities(true)
 
     try {
-      const response = await fetch('/api/upload/cities/easy-route', {
+      const response = await fetch('/api/upload/cities/mock', {
         method: 'POST'
       })
 
@@ -47,7 +47,7 @@ export default function UploadPage() {
     setUploadingSalaries(true)
 
     try {
-      const response = await fetch('/api/upload/salaries/easy-route', {
+      const response = await fetch('/api/upload/salaries/mock', {
         method: 'POST'
       })
 
