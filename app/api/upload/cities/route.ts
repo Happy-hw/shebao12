@@ -4,9 +4,12 @@ import { parseCitiesExcel, validateCitiesData } from '@/lib/excel-parser'
 import { mockCities } from '@/lib/mock-data'
 
 export async function POST(request: NextRequest) {
+  console.log('开始处理城市数据上传请求')
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
+    console.log('接收到文件:', file?.name)
 
     if (!file) {
       return NextResponse.json({ error: '请选择文件' }, { status: 400 })
@@ -60,8 +63,13 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('上传城市数据时出错:', error)
+    console.error('错误堆栈:', error.stack)
     return NextResponse.json(
-      { error: '服务器错误', details: error.message },
+      {
+        error: '服务器错误',
+        details: error.message || '未知错误',
+        stack: error.stack || '无堆栈信息'
+      },
       { status: 500 }
     )
   }
