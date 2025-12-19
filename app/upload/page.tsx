@@ -20,39 +20,25 @@ export default function UploadPage() {
   }
 
   const handleCitiesUpload = async () => {
-    console.log('=== Cities Upload Clicked ===')
-    console.log('citiesFile:', citiesFile)
-    console.log('citiesFile name:', citiesFile?.name)
-    console.log('citiesFile size:', citiesFile?.size)
+    if (!citiesFile) {
+      showMessage('请选择城市数据文件', 'error')
+      return
+    }
 
     setUploadingCities(true)
     const formData = new FormData()
-
-    // 如果有文件，添加文件
-    if (citiesFile) {
-      console.log('Adding file to FormData:', citiesFile.name)
-      formData.append('file', citiesFile)
-      console.log('FormData after adding file:', formData)
-    } else {
-      console.log('No file to add!')
-    }
+    formData.append('file', citiesFile)
 
     try {
-      console.log('Sending request to /api/upload/cities')
       const response = await fetch('/api/upload/cities', {
         method: 'POST',
         body: formData
       })
 
       const result = await response.json()
-      console.log('Response:', result)
 
       if (response.ok) {
-        if (result.mock) {
-          showMessage(`${result.message}！共 ${result.count} 条记录`, 'success')
-        } else {
-          showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
-        }
+        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
         setCitiesFile(null)
         // 清空文件输入
         const fileInput = document.getElementById('cities-file-input') as HTMLInputElement
@@ -69,38 +55,25 @@ export default function UploadPage() {
   }
 
   const handleSalariesUpload = async () => {
-    console.log('=== Salaries Upload Clicked ===')
-    console.log('salariesFile:', salariesFile)
-    console.log('salariesFile name:', salariesFile?.name)
-    console.log('salariesFile size:', salariesFile?.size)
+    if (!salariesFile) {
+      showMessage('请选择工资数据文件', 'error')
+      return
+    }
 
     setUploadingSalaries(true)
     const formData = new FormData()
-
-    // 如果有文件，添加文件
-    if (salariesFile) {
-      console.log('Adding file to FormData:', salariesFile.name)
-      formData.append('file', salariesFile)
-    } else {
-      console.log('No file to add!')
-    }
+    formData.append('file', salariesFile)
 
     try {
-      console.log('Sending request to /api/upload/salaries')
       const response = await fetch('/api/upload/salaries', {
         method: 'POST',
         body: formData
       })
 
       const result = await response.json()
-      console.log('Response:', result)
 
       if (response.ok) {
-        if (result.mock) {
-          showMessage(`${result.message}！共 ${result.count} 条记录`, 'success')
-        } else {
-          showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
-        }
+        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
         setSalariesFile(null)
         // 清空文件输入
         const fileInput = document.getElementById('salaries-file-input') as HTMLInputElement
@@ -126,7 +99,7 @@ export default function UploadPage() {
       const result = await response.json()
 
       if (response.ok) {
-        showMessage(`计算完成！共生成 ${result.count} 条结果`, 'success')
+        showMessage(`${result.message}！共生成 ${result.count} 条结果，总费用：￥${result.totalFee.toLocaleString()}`, 'success')
         setTimeout(() => {
           router.push('/results')
         }, 2000)
@@ -134,6 +107,7 @@ export default function UploadPage() {
         showMessage(result.error || '计算失败', 'error')
       }
     } catch (error) {
+      console.error('Calculate error:', error)
       showMessage('计算过程中出错', 'error')
     } finally {
       setCalculating(false)
@@ -184,14 +158,14 @@ export default function UploadPage() {
                 上传各城市的社保基数标准（Excel格式）
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                需要包含列：city_name, year, base_min, base_max, rate
+                必须包含列：city_name, year, base_min, base_max, rate
               </p>
               <a
                 href="/api/templates/cities"
                 download="cities_template.xlsx"
                 className="inline-block mt-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
-                下载模板文件 →
+                📥 下载模板文件
               </a>
             </div>
 
@@ -200,11 +174,7 @@ export default function UploadPage() {
                 id="cities-file-input"
                 type="file"
                 accept=".xlsx,.xls"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] || null
-                  console.log('File selected for cities:', file?.name, file?.size)
-                  setCitiesFile(file)
-                }}
+                onChange={(e) => setCitiesFile(e.target.files?.[0] || null)}
                 className="block w-full text-sm text-gray-500 dark:text-gray-300
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
@@ -215,7 +185,7 @@ export default function UploadPage() {
 
               <button
                 onClick={handleCitiesUpload}
-                disabled={uploadingCities}
+                disabled={!citiesFile || uploadingCities}
                 className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {uploadingCities ? '上传中...' : '上传城市数据'}
@@ -233,14 +203,14 @@ export default function UploadPage() {
                 上传员工月度工资数据（Excel格式）
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                需要包含列：employee_id, employee_name, city_name, month, salary_amount
+                必须包含列：employee_name, city_name, month, salary_amount
               </p>
               <a
                 href="/api/templates/salaries"
                 download="salaries_template.xlsx"
                 className="inline-block mt-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
-                下载模板文件 →
+                📥 下载模板文件
               </a>
             </div>
 
@@ -249,11 +219,7 @@ export default function UploadPage() {
                 id="salaries-file-input"
                 type="file"
                 accept=".xlsx,.xls"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] || null
-                  console.log('File selected for salaries:', file?.name, file?.size)
-                  setSalariesFile(file)
-                }}
+                onChange={(e) => setSalariesFile(e.target.files?.[0] || null)}
                 className="block w-full text-sm text-gray-500 dark:text-gray-300
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
@@ -264,7 +230,7 @@ export default function UploadPage() {
 
               <button
                 onClick={handleSalariesUpload}
-                disabled={uploadingSalaries}
+                disabled={!salariesFile || uploadingSalaries}
                 className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {uploadingSalaries ? '上传中...' : '上传工资数据'}
@@ -280,6 +246,9 @@ export default function UploadPage() {
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 基于上传的数据计算社保费用
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                请确保已上传城市标准和工资数据
               </p>
             </div>
 
@@ -302,15 +271,17 @@ export default function UploadPage() {
           </div>
         </div>
 
-        {/* 调试信息 */}
-        <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          <h4 className="font-semibold mb-2">调试信息：</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            城市文件: {citiesFile ? `${citiesFile.name} (${citiesFile.size} bytes)` : '未选择'}
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            工资文件: {salariesFile ? `${salariesFile.name} (${salariesFile.size} bytes)` : '未选择'}
-          </p>
+        {/* 使用说明 */}
+        <div className="mt-12 p-6 bg-blue-50 dark:bg-gray-800 rounded-lg">
+          <h4 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">📋 使用说明</h4>
+          <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600 dark:text-gray-300">
+            <li>下载对应的数据模板文件</li>
+            <li>按照模板格式填写实际数据</li>
+            <li>上传城市标准数据（各城市的社保基数）</li>
+            <li>上传工资数据（员工每月工资记录）</li>
+            <li>点击"执行计算并存储结果"</li>
+            <li>在结果页面查看计算详情</li>
+          </ol>
         </div>
       </div>
     </div>
