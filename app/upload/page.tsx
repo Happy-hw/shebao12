@@ -20,28 +20,48 @@ export default function UploadPage() {
   }
 
   const handleCitiesUpload = async () => {
+    console.log('=== Cities Upload Clicked ===')
+    console.log('citiesFile:', citiesFile)
+    console.log('citiesFile name:', citiesFile?.name)
+    console.log('citiesFile size:', citiesFile?.size)
+
     setUploadingCities(true)
     const formData = new FormData()
 
     // 如果有文件，添加文件
     if (citiesFile) {
+      console.log('Adding file to FormData:', citiesFile.name)
       formData.append('file', citiesFile)
+      console.log('FormData after adding file:', formData)
+    } else {
+      console.log('No file to add!')
     }
 
     try {
+      console.log('Sending request to /api/upload/cities')
       const response = await fetch('/api/upload/cities', {
         method: 'POST',
         body: formData
       })
 
       const result = await response.json()
+      console.log('Response:', result)
 
       if (response.ok) {
-        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
+        if (result.mock) {
+          showMessage(`${result.message}！共 ${result.count} 条记录`, 'success')
+        } else {
+          showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
+        }
+        setCitiesFile(null)
+        // 清空文件输入
+        const fileInput = document.getElementById('cities-file-input') as HTMLInputElement
+        if (fileInput) fileInput.value = ''
       } else {
         showMessage(result.error || '上传失败', 'error')
       }
     } catch (error) {
+      console.error('Upload error:', error)
       showMessage('上传过程中出错', 'error')
     } finally {
       setUploadingCities(false)
@@ -49,28 +69,47 @@ export default function UploadPage() {
   }
 
   const handleSalariesUpload = async () => {
+    console.log('=== Salaries Upload Clicked ===')
+    console.log('salariesFile:', salariesFile)
+    console.log('salariesFile name:', salariesFile?.name)
+    console.log('salariesFile size:', salariesFile?.size)
+
     setUploadingSalaries(true)
     const formData = new FormData()
 
     // 如果有文件，添加文件
     if (salariesFile) {
+      console.log('Adding file to FormData:', salariesFile.name)
       formData.append('file', salariesFile)
+    } else {
+      console.log('No file to add!')
     }
 
     try {
+      console.log('Sending request to /api/upload/salaries')
       const response = await fetch('/api/upload/salaries', {
         method: 'POST',
         body: formData
       })
 
       const result = await response.json()
+      console.log('Response:', result)
 
       if (response.ok) {
-        showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
+        if (result.mock) {
+          showMessage(`${result.message}！共 ${result.count} 条记录`, 'success')
+        } else {
+          showMessage(`${result.message}！共上传 ${result.count} 条记录`, 'success')
+        }
+        setSalariesFile(null)
+        // 清空文件输入
+        const fileInput = document.getElementById('salaries-file-input') as HTMLInputElement
+        if (fileInput) fileInput.value = ''
       } else {
         showMessage(result.error || '上传失败', 'error')
       }
     } catch (error) {
+      console.error('Upload error:', error)
       showMessage('上传过程中出错', 'error')
     } finally {
       setUploadingSalaries(false)
@@ -158,21 +197,25 @@ export default function UploadPage() {
 
             <div className="space-y-4">
               <input
+                id="cities-file-input"
                 type="file"
                 accept=".xlsx,.xls"
-                onChange={(e) => setCitiesFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null
+                  console.log('File selected for cities:', file?.name, file?.size)
+                  setCitiesFile(file)
+                }}
                 className="block w-full text-sm text-gray-500 dark:text-gray-300
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
                   file:bg-blue-50 file:text-blue-700
-                  dark:file:bg-blue-900 dark:file:text-blue-200
-                  hover:file:bg-blue-100 dark:hover:file:bg-blue-800"
+                  hover:file:bg-blue-100"
               />
 
               <button
                 onClick={handleCitiesUpload}
-                disabled={!citiesFile || uploadingCities}
+                disabled={uploadingCities}
                 className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {uploadingCities ? '上传中...' : '上传城市数据'}
@@ -203,21 +246,25 @@ export default function UploadPage() {
 
             <div className="space-y-4">
               <input
+                id="salaries-file-input"
                 type="file"
                 accept=".xlsx,.xls"
-                onChange={(e) => setSalariesFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null
+                  console.log('File selected for salaries:', file?.name, file?.size)
+                  setSalariesFile(file)
+                }}
                 className="block w-full text-sm text-gray-500 dark:text-gray-300
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
-                  file:bg-green-50 file:text-green-700
-                  dark:file:bg-green-900 dark:file:text-green-200
-                  hover:file:bg-green-100 dark:hover:file:bg-green-800"
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100"
               />
 
               <button
                 onClick={handleSalariesUpload}
-                disabled={!salariesFile || uploadingSalaries}
+                disabled={uploadingSalaries}
                 className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {uploadingSalaries ? '上传中...' : '上传工资数据'}
@@ -232,39 +279,38 @@ export default function UploadPage() {
                 执行计算
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                根据上传的数据计算社保费用
+                基于上传的数据计算社保费用
               </p>
             </div>
 
             <div className="space-y-4">
-              <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                确保已上传城市标准和工资数据后再执行计算
-              </div>
-
               <button
                 onClick={handleCalculate}
                 disabled={calculating}
-                className="w-full py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-3 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-semibold"
               >
                 {calculating ? '计算中...' : '执行计算并存储结果'}
+              </button>
+
+              <button
+                onClick={() => router.push('/results')}
+                className="w-full py-2 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                查看结果
               </button>
             </div>
           </div>
         </div>
 
-        {/* 使用说明 */}
-        <div className="mt-12 max-w-4xl mx-auto">
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              使用说明
-            </h4>
-            <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
-              <li>首先上传城市社保标准数据文件</li>
-              <li>然后上传员工工资数据文件</li>
-              <li>点击"执行计算"按钮开始计算</li>
-              <li>计算完成后可查看结果页面</li>
-            </ol>
-          </div>
+        {/* 调试信息 */}
+        <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <h4 className="font-semibold mb-2">调试信息：</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            城市文件: {citiesFile ? `${citiesFile.name} (${citiesFile.size} bytes)` : '未选择'}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            工资文件: {salariesFile ? `${salariesFile.name} (${salariesFile.size} bytes)` : '未选择'}
+          </p>
         </div>
       </div>
     </div>
