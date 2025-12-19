@@ -20,12 +20,18 @@ export default function UploadPage() {
   }
 
   const handleCitiesUpload = async () => {
-    // 使用简化的API，不需要文件
     setUploadingCities(true)
+    const formData = new FormData()
+
+    // 如果有文件，添加文件
+    if (citiesFile) {
+      formData.append('file', citiesFile)
+    }
 
     try {
       const response = await fetch('/api/upload/cities', {
-        method: 'POST'
+        method: 'POST',
+        body: formData
       })
 
       const result = await response.json()
@@ -43,12 +49,18 @@ export default function UploadPage() {
   }
 
   const handleSalariesUpload = async () => {
-    // 使用简化的API，不需要文件
     setUploadingSalaries(true)
+    const formData = new FormData()
+
+    // 如果有文件，添加文件
+    if (salariesFile) {
+      formData.append('file', salariesFile)
+    }
 
     try {
       const response = await fetch('/api/upload/salaries', {
-        method: 'POST'
+        method: 'POST',
+        body: formData
       })
 
       const result = await response.json()
