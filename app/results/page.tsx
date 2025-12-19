@@ -42,8 +42,8 @@ export default function ResultsPage() {
         setTotalFee(data.total)
 
         // 提取唯一的城市和年份
-        const uniqueCities = [...new Set(data.results.map((r: Result) => r.city_name))]
-        const uniqueYears = [...new Set(data.results.map((r: Result) => r.year))]
+        const uniqueCities = Array.from(new Set(data.results.map((r: Result) => r.city_name))) as string[]
+        const uniqueYears = Array.from(new Set(data.results.map((r: Result) => r.year))) as string[]
         setCities(uniqueCities)
         setYears(uniqueYears)
       }
